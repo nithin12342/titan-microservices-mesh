@@ -1,0 +1,202 @@
+{
+  "harness": {
+    "project": "titan-microservices-mesh",
+    "version": "1.0.0",
+    "description": "Harness configuration for Titan Microservices Mesh - Distributed Systems",
+    "created_date": "2026-03-05"
+  },
+  "service_mesh_harness": {
+    "service_mesh": "Istio",
+    "version": "1.20",
+    "ingress": "Istio Ingress Gateway",
+    "egress": "Istio Egress Gateway",
+    "mTLS": "STRICT",
+    "auto_injection": true
+  },
+  "kubernetes_harness": {
+    "orchestration": "AKS",
+    "service_discovery": "Kubernetes DNS / Consul",
+    "ingress": "nginx-ingress",
+    "cni": "Azure CNI",
+    "csi": "azure-disk-csi-driver"
+  },
+  "service_templates": {
+    "go": "templates/go-service",
+    "rust": "templates/rust-service",
+    "java": "templates/java-service",
+    "nodejs": "templates/node-service",
+    "python": "templates/python-service"
+  },
+  "resilience_patterns": {
+    "circuit_breaker": {
+      "go": "go-breaker",
+      "java": "Resilience4j",
+      "threshold": 5,
+      "timeout": "30s"
+    },
+    "retry": {
+      "max_attempts": 3,
+      "backoff": "exponential",
+      "max_delay": "10s"
+    },
+    "timeout": {
+      "default": "5s",
+      "read": "10s",
+      "write": "15s"
+    },
+    "bulkhead": {
+      "max_concurrent": 100,
+      "max_queue": 50
+    }
+  },
+  "ci_cd_harness": {
+    "pipeline_stages": [
+      {
+        "name": "lint",
+        "actions": ["golangci-lint", "eslint", "pylint"]
+      },
+      {
+        "name": "test",
+        "actions": ["unit tests", "integration tests"]
+      },
+      {
+        "name": "build",
+        "actions": ["docker build", "docker push"]
+      },
+      {
+        "name": "contract-test",
+        "actions": ["pact verify", "openapi validate"]
+      },
+      {
+        "name": "security-scan",
+        "actions": ["trivy", "semgrep", "dependency check"]
+      },
+      {
+        "name": "deploy-staging",
+        "actions": ["helm upgrade", "smoke tests"]
+      },
+      {
+        "name": "deploy-production",
+        "actions": ["canary deployment", "integration tests"]
+      }
+    ],
+    "quality_gates": {
+      "test_coverage": 90,
+      "contract_tests": "required",
+      "security_scan": "mandatory",
+      "approval_required": true
+    },
+    "deployment_strategies": [
+      {
+        "name": "canary",
+        "traffic_split": "10-50-100",
+        "automated_rollback": true
+      },
+      {
+        "name": "blue-green",
+        "swap_time": "5 minutes"
+      }
+    ]
+  },
+  "testing_harness": {
+    "unit_tests": {
+      "frameworks": {
+        "go": "testing / testify",
+        "java": "JUnit 5",
+        "nodejs": "Jest",
+        "python": "pytest"
+      },
+      "coverage_threshold": 90
+    },
+    "integration_tests": {
+      "framework": "testcontainers",
+      "environment": "kubernetes"
+    },
+    "contract_tests": {
+      "framework": "Pact",
+      "broker": "Pact Broker"
+    },
+    "chaos_tests": {
+      "framework": "Chaos Mesh",
+      "schedule": "weekly",
+      "experiments": ["pod_kill", "network_partition", "latency"]
+    }
+  },
+  "observability_harness": {
+    "tracing": {
+      "backend": "Azure Application Insights",
+      "sampling_rate": 0.1,
+      "instrumentation": "OpenTelemetry"
+    },
+    "metrics": {
+      "backend": "Prometheus",
+      "service_metrics": [
+        "request_rate",
+        "error_rate",
+        "latency_p99",
+        "saturation"
+      ]
+    },
+    "logging": {
+      "aggregation": "Azure Monitor / Loki",
+      "structured": true,
+      "sampling": 0.1
+    },
+    "dashboards": [
+      {
+        "name": "Service Mesh Overview",
+        "metrics": ["traffic", "error_rate", "latency"]
+      },
+      {
+        "name": "Service Health",
+        "metrics": ["uptime", "circuit_breaker", "retry_rate"]
+      },
+      {
+        "name": "Kubernetes Resources",
+        "metrics": ["cpu", "memory", "replicas"]
+      }
+    ]
+  },
+  "security_harness": {
+    "authentication": {
+      "service": "mTLS",
+      "user": "OAuth2 / JWT"
+    },
+    "authorization": {
+      "model": "RBAC",
+      "istio_authorization": true
+    },
+    "network": {
+      "mtls": "STRICT",
+      "network_policies": true,
+      "egress_control": true
+    },
+    "secrets": {
+      "provider": "Azure Key Vault",
+      "injection": "csi-driver"
+    }
+  },
+  "service_discovery": {
+    "provider": "Kubernetes DNS",
+    "health_checks": "HTTP + TTL",
+    "dns": true,
+    "azure_dns_private": true
+  },
+  "api_management": {
+    "gateway": "Azure API Management",
+    "rate_limiting": true,
+    "authentication": "JWT",
+    "caching": "Azure Cache for Redis"
+  },
+  "automation_harness": {
+    "scripts": {
+      "create_service": "scripts/create-service.sh",
+      "deploy": "scripts/deploy.sh",
+      "rollback": "scripts/rollback.sh"
+    },
+    "helm_charts": {
+      "chartmuseum": true,
+      "repositories": ["bitnami", "istio"]
+    }
+  }
+}

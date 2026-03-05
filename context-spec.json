@@ -1,0 +1,131 @@
+{
+  "context_specification": {
+    "project": {
+      "id": "titan-microservices-mesh",
+      "name": "Titan Microservices Mesh",
+      "version": "1.0.0",
+      "description": "Distributed systems and service mesh meta-repository",
+      "domain": "Distributed Systems & Service Mesh",
+      "organization": "Dulux Tech",
+      "methodology": "Domain-Driven Design + Service Mesh"
+    },
+    "domain_context": {
+      "bounded_context": "Microservices Architecture",
+      "scale": "100+ microservices, 10K+ RPS",
+      "core_responsibilities": [
+        "Service communication",
+        "Service discovery",
+        "Load balancing",
+        "Circuit breaking",
+        "Distributed tracing"
+      ],
+      "upstream_dependencies": [
+        "nebula-cloud-platform"
+      ],
+      "downstream_consumers": [
+        "aurora-fullstack-saas"
+      ]
+    },
+    "key_components": [
+      {
+        "id": "order-service",
+        "description": "Order management and processing",
+        "responsibilities": ["order creation", "order validation", "order tracking"]
+      },
+      {
+        "id": "payment-service",
+        "description": "Payment processing",
+        "responsibilities": ["payment authorization", "refunds", "webhooks"]
+      },
+      {
+        "id": "inventory-service",
+        "description": "Inventory management",
+        "responsibilities": ["stock tracking", "reservations", "availability"]
+      },
+      {
+        "id": "user-service",
+        "description": "User management",
+        "responsibilities": ["authentication", "profile management", "preferences"]
+      },
+      {
+        "id": "analytics-service",
+        "description": "Analytics and metrics",
+        "responsibilities": ["event processing", "aggregation", "reporting"]
+      },
+      {
+        "id": "notification-service",
+        "description": "Notification system",
+        "responsibilities": ["email", "SMS", "push notifications"]
+      },
+      {
+        "id": "service-mesh",
+        "description": "Service mesh infrastructure",
+        "responsibilities": ["traffic management", "security", "observability"]
+      },
+      {
+        "id": "observability",
+        "description": "Distributed tracing and monitoring",
+        "responsibilities": ["tracing", "metrics", "logging"]
+      }
+    ],
+    "technology_stack": {
+      "languages": ["Go", "Rust", "Java", "Node.js", "Python"],
+      "service_mesh": ["Istio", "Linkerd", "Azure Service Fabric"],
+      "resilience": ["Resilience4j", "go-breaker", "circuitbreaker"],
+      "databases": ["PostgreSQL (Azure DB)", "Cosmos DB", "MongoDB (Atlas)", "Redis (Azure)", "ClickHouse"],
+      "messaging": ["Azure Service Bus", "RabbitMQ", "NATS"]
+    },
+    "architecture_principles": [
+      "Domain-Driven Design: Bounded contexts per service",
+      "API-First: Contract-driven development",
+      "Resilience: Circuit breakers, retries, timeouts",
+      "Observability: Distributed tracing everywhere",
+      "Security: mTLS everywhere, zero-trust",
+      "Autonomy: Team ownership of services"
+    ],
+    "development_phases": {
+      "phase_1": {
+        "name": "Foundation",
+        "duration": "2 weeks",
+        "deliverables": [
+          "Service mesh setup",
+          "Service templates",
+          "CI/CD pipelines",
+          "Observability stack"
+        ]
+      },
+      "phase_2": {
+        "name": "Core Services",
+        "duration": "4 weeks",
+        "deliverables": [
+          "Core domain services",
+          "API gateway (Azure API Management)",
+          "Service discovery",
+          "Authentication"
+        ]
+      },
+      "phase_3": {
+        "name": "Advanced Features",
+        "duration": "3 weeks",
+        "deliverables": [
+          "Advanced resilience patterns",
+          "Chaos engineering",
+          "Performance optimization",
+          "Multi-region support"
+        ]
+      }
+    },
+    "quality_requirements": {
+      "test_coverage": 90,
+      "api_contract_testing": "required",
+      "chaos_testing": "required",
+      "documentation": "OpenAPI specs"
+    },
+    "success_criteria": {
+      "availability": 99.99,
+      "latency_p99": "<200ms",
+      "deployment_frequency": "daily",
+      "mtls_coverage": 100
+    }
+  }
+}
