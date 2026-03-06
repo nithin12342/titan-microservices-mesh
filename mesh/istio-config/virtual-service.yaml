@@ -1,0 +1,66 @@
+# Istio VirtualService Configuration
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: order-service
+  namespace: titan-mesh
+spec:
+  hosts:
+    - order-service
+  http:
+    - match:
+        - headers:
+            x-request-type:
+              exact: canary
+      route:
+        - destination:
+            host: order-service
+            subset: canary
+          weight: 10
+        - destination:
+            host: order-service
+            subset: stable
+          weight: 90
+    - route:
+        - destination:
+            host: order-service
+            subset: stable
+          headers:
+            request:
+              add:
+                x-canary: "false"
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: payment-service
+  namespace: titan-mesh
+spec:
+  hosts:
+    - payment-service
+  http:
+    - route:
+        - destination:
+            host: payment-service
+            subset: stable
+          weight: 100
+  retries:
+    attempts: 3
+      perTryTimeout: 2s
+      retryOn: gateway-error,connect-failure,refused-stream
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: user-service
+  namespace: titan-mesh
+spec:
+  hosts:
+    - user-service
+  http:
+    - route:
+        - destination:
+            host: user-service
+            subset: stable
+          weight: 100
+  timeout: 5s
