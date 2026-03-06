@@ -1,0 +1,75 @@
+replicaCount: 2
+
+image:
+  repository: titanregistry.azurecr.io/order-service
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+service:
+  type: ClusterIP
+  port: 8080
+  targetPort: 8080
+
+ingress:
+  enabled: true
+  className: istio
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  hosts:
+    - host: order-service.titan.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: order-service-tls
+      hosts:
+        - order-service.titan.local
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+  initialDelaySeconds: 30
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 5
+
+env:
+  - name: DB_HOST
+    valueFrom:
+      secretKeyRef:
+        name: titan-secrets
+        key: db-host
+  - name: DB_PORT
+    value: "5432"
+  - name: REDIS_ADDR
+    value: "redis:6379"
+
+database:
+  host: postgres.titan.svc.cluster.local
+  port: 5432
+  name: titan_orders
+  user: postgres
+
+redis:
+  host: redis.titan.svc.cluster.local
+  port: 6379
